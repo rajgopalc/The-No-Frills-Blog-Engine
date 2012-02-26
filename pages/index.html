@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<title> Index Page </title>
+		<style>
+		  a.index_anchor{
+		             text-decoration:none;
+		             background-color:black;
+		             color:white;
+		             }
+		  a.index_anchor:hover{
+		             text-decoration:none;
+		             background-color:white;
+		             color:black;
+		             border-left:5px solid black;
+		             border-right:5px solid black;
+		             }
+		</style>
+	</head>
+	<body> 
+	       <div align="center" style="position:relative">
+	        <div align="left" style="position:absolute; top:0; left:0;">
+		  <h1 align="right"> Kaleidoscope </h1>
+		  <h4 align="right">-- The World as I see it -- </h4>
+		</div>
+		<div align="right" style="top:0; right:0; position:absolute;">
+		  {% if user_status %}
+		    <a class="index_anchor" href={{logout}}> Logout</a>
+                      {% if admin_status %}
+		        <a class="index_anchor" href='/admin'> Admin Dashboard </a>
+		      {% else %}
+			&nbsp; Info : User not Admin 
+		      {% endif %}
+		    {% else %}  
+		      <a class="index_anchor" href={{login}}> Login </a>
+		    {% endif %}
+		</div>
+		</div>
+		<br><br>
+		<p></p>
+		<div style="top:5em; position:relative; width:50%;">
+		{% for data in blog_data %}
+		  <blockquote><big style="text-decoration:underline;">{{data.title|escape}}</big>
+		    <p>{{data.content|escape}}</p>
+		  <small><i>Written by <b>{{data.author}}</b> on {{data.date}}</i></small>
+		  </blockquote>
+		  <br><br>
+		{% endfor %}
+	        </div>
+		<!-- <blockquote> Hi..this is a block quote 2 </blockquote>
+		     <blockquote> Hi..this is a block quote 3</blockquote> -->
+	</body>
+</html>

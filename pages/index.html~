@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title> Index Page </title>
+		<link rel="stylesheet" type="text/css" href={{context_path}}/css/index.css>
+	</head>
+	<body> 
+	       <div align="center" style="position:relative">
+	        <div align="left" style="position:absolute; top:0; left:0;">
+		  <h1 align="right"> Kaleidoscope </h1>
+		  <h4 align="right">-- The World as I see it -- </h4>
+		</div>
+		<div align="right" style="top:0; right:0; position:absolute;">
+		  {% if user_status %}
+		    <a class="index_anchor" href={{logout}}> Logout </a>
+                      {% if admin_status %}
+		        <a class="index_anchor" href='/admin'> Admin Dashboard </a>
+		      {% else %}
+			&nbsp; Info : User not Admin 
+		      {% endif %}
+		    {% else %}  
+		      <a class="index_anchor" href={{login}}>Login </a>
+		    {% endif %}
+		</div>
+		</div>
+		<br><br>
+		<p></p>
+		<div style="top:5em; position:relative;">
+		{% for data in blog_data %}
+		  <b>{{data.author}}</b> wrote on {{data.date}}:
+		  <blockquote> {{data.content|escape}}</blockquote>
+		{% endfor %}
+	        </div>
+		<!-- <blockquote> Hi..this is a block quote 2 </blockquote>
+		     <blockquote> Hi..this is a block quote 3</blockquote> -->
+	</body>
+</html>

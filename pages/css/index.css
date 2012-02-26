@@ -1,0 +1,11 @@
+a.index_anchor{
+    text-decoration: none;
+    background-color: black;
+    font-color: white;
+}
+
+a.index_anchor hover{
+    text-decoration: none;
+    background-color: grey;
+    font-color: red;
+}

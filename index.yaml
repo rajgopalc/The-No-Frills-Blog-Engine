@@ -1,0 +1,8 @@
+indexes:
+- kind: BlogData
+  properties:
+  - name: author
+  - name: date
+  - name: title
+  - name: content
+    direction: desc
