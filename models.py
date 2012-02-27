@@ -13,8 +13,7 @@ class BlogData(db.Model):
   author = db.StringProperty()
   title = db.StringProperty()
   content = db.TextProperty()
-  date = db.DateProperty(auto_now_add=True)
-  time = db.TimeProperty(auto_now_add=True)
+  date = db.DateTimeProperty(auto_now_add=True)
  # @classmethod
  # def get_all(cls):
  #	blog_data=db.Query(BlogData)

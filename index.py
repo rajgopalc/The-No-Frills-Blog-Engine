@@ -16,7 +16,7 @@ class IndexPage(webapp.RequestHandler):
   def get(self):
 	self.processRequest()
   def processRequest(self):
-	blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY time DESC LIMIT 10")
+	blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY date DESC LIMIT 10")
         #query=BlogData.all()
         #blog_data=query.fetch(10)
         user_status=users.get_current_user()

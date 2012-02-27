@@ -37,15 +37,14 @@
 		</div>
 		<br><br>
 		<p></p>
-		<div style="top:5em; position:relative; width:50%;">
-		{% for data in blog_data %}
-		  <blockquote><big style="text-decoration:underline;">{{data.title|escape}}</big>
-		    <p>{{data.content|escape}}</p>
-		  <small><i>Written by <b>{{data.author}}</b> on {{data.date|date}}</i></small>
-		  </blockquote>
-		  <br><br>
-		{% endfor %}
-	        </div>
+                <div style="top:5em; position:relative; width:50%;">
+	               {% for data in blog_data %}
+        	         <blockquote><big style="text-decoration:underline;">{{data.title|escape}}</big>
+                	 <p>{{data.content|escape}}</p>
+                 	<small><i>Written by <b>{{data.author}}</b> on {{data.date.date}}</i></small>
+                	</blockquote>
+                 	<br><br>
+               		{% endfor %}
 		<!-- <blockquote> Hi..this is a block quote 2 </blockquote>
 		     <blockquote> Hi..this is a block quote 3</blockquote> -->
 	</body>
