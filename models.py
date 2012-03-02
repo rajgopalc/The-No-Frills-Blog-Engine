@@ -7,6 +7,7 @@ import logging
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext import webapp
+from google.appengine.ext import blobstore
 
 FETCH_THEM_ALL = ((sys.maxint - 1) >> 32) & 0xffffffff
 
@@ -15,7 +16,7 @@ class BlogData(db.Model):
   title = db.StringProperty()
   content = db.TextProperty()
   date = db.DateTimeProperty(auto_now_add=True)
-
+  blob_key=db.StringProperty()
  # @classmethod
  # def get_all(cls):
  #	blog_data=db.Query(BlogData)

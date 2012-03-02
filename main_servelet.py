@@ -4,6 +4,7 @@ import datetime
 import wsgiref.handlers
 import logging
 import os
+import urllib
 
 
 from google.appengine.ext import db
@@ -11,6 +12,8 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
 from models import *
 
 #DataCount class is based on the code snippet by B.Clapper - Picoblog
@@ -41,12 +44,16 @@ class IndexPage(webapp.RequestHandler):
 	self.processRequest()
   def processRequest(self):
 	blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY date DESC LIMIT 10")
-        user_status=users.get_current_user()
+        user=users.get_current_user()
+        username=user.nickname()
         admin_status=users.is_current_user_admin()
         login=users.create_login_url('/')
 	logout=users.create_logout_url('/')
+        for data in blog_data:
+            logging.debug(data.blob_key)
 	template_value={'blog_data':blog_data,
-                        'user_status':user_status,
+                        'current_user':user,
+                        'current_username':username,
                         'admin_status':admin_status,
 			'logout' : logout,
 			'login': login,
@@ -79,8 +86,11 @@ class AdminDash(webapp.RequestHandler):
   def get(self):
 	self.processRequest()
   def processRequest(self):
+	bloburl=blobstore.create_upload_url('/save')
 	logout = users.create_logout_url('/')
-	template_value={'logout':logout}
+	template_value={'logout':logout,
+			'bloburl':bloburl
+			}
 	user=users.get_current_user()
 	if user:
 		logging.debug('User login done')
@@ -96,8 +106,16 @@ class AdminDash(webapp.RequestHandler):
 
 
 
-class SavePost(webapp.RequestHandler):
+class SavePost(blobstore_handlers.BlobstoreUploadHandler):
   def post(self):
+        upload_files=self.get_uploads('file')
+        if (upload_files):
+            blob_info=upload_files[0]
+            blob_key=blob_info.key()
+            logging.debug('Blob Key')
+            logging.debug(blob_key)
+        else:
+            blob_key="None"
 	user = users.get_current_user()
 	blogdata = BlogData()
   	blogdata.author = user.nickname()
@@ -105,9 +123,9 @@ class SavePost(webapp.RequestHandler):
         blogdata.title=self.request.get('title')
    	blogdata.content = self.request.get('content')
     	logging.debug('Content:'+blogdata.content)
+        blogdata.blob_key=str(blob_key)
         blogdata.put()
 	self.redirect('/')
-
 
 
 class MonthArchive(webapp.RequestHandler):
@@ -134,7 +152,7 @@ class MonthArchive(webapp.RequestHandler):
 class EditPost(webapp.RequestHandler):
   def get(self,postid):
         logging.debug('In EditPost')
-        #logging.debug(int(postid))
+        logging.debug(int(postid))
 	blog_data = BlogData.all()
         start_cursor=memcache.get('blogdata_start_cursor')
         end_cursor=memcache.get('blogdata_end_cursor')
@@ -180,13 +198,39 @@ class SaveEditPost(webapp.RequestHandler):
         bd.content=self.request.get('content')
         bd.put()
         self.redirect('/')
+
+class ShowImg(blobstore_handlers.BlobstoreDownloadHandler):
+    def get(self,resource):
+        resource=str(urllib.unquote(resource))
+        blob_info=blobstore.BlobInfo.get(resource)
+        self.send_blob(blob_info)
+
+class DeletePost(webapp.RequestHandler):
+    def get(self,postid):
+        blog_data = BlogData.all()
+        start_cursor=memcache.get('blogdata_start_cursor')
+        end_cursor=memcache.get('blogdata_end_cursor')
+        if start_cursor:
+            blog_data.with_cursor(start_cursor=start_cursor)
+        if end_cursor:
+            blog_data.with_cursor(end_cursor=end_cursor)
+        for data in blog_data:
+            if(data.key().id()==int(postid)):
+                if (data.blob_key != "None"):
+                    blob_info=blobstore.BlobInfo.get(data.blob_key)
+                    blob_info.delete()
+                data.delete()
+        self.redirect('/')
+
 application = webapp.WSGIApplication([
   ('/', IndexPage),
   ('/admin',AdminDash),
   ('/save',SavePost),
   ('/date/(\d\d\d\d)-(\d\d)/?$',MonthArchive),
-  ('/edit/(\w)*/?$',EditPost),
-  ('/editsave',SaveEditPost)
+  ('/edit/([\w]*)/?$',EditPost),
+  ('/editsave',SaveEditPost),
+  ('/showimg/([^/]+)?', ShowImg),
+  ('/deletepost/([\w]*)/?$', DeletePost)
 ], debug=True)
 
 

@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title> Index Page </title>
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700&amp;v2' rel='stylesheet' type='text/css'/>
 		<style>
 		  a.index_anchor{
 		             text-decoration:none;
@@ -18,7 +19,7 @@
 	</head>
 	<body>
 	  <div id="header" align="right" height="5px" width="100%" style="valign:top;">
-	    {% if user_status %}
+	    {% if current_user %}
 		    <a class="index_anchor" href={{logout}}> Logout</a>
                       {% if admin_status %}
 		        <a class="index_anchor" href='/admin'> Admin Dashboard </a>
@@ -52,8 +53,16 @@
 		{% for data in blog_data %}
 		  <blockquote><big style="text-decoration:underline;">{{data.title|escape}}</big>
 		    <p>{{data.content|escape}}</p>
+		    {% ifnotequal data.blob_key "None" %}
+		    <img src="/showimg/{{data.blob_key}}" heigh="200px" width="200x"/><br>
+		    {% endifnotequal %}
 		  <small><i>Written by <b>{{data.author}}</b> on {{data.date|date}}</i></small>
-		  <a href='/edit/{{data.key.id}}'>Edit</a>
+		  {% if admin_status %}
+		   {% ifequal data.author current_username %}
+		    <a href='/edit/{{data.key.id}}'>Edit</a>
+		    <a href='/deletepost/{{data.key.id}}'>Delete Post</a>
+		   {% endifequal %}
+		  {% endif %}
 		  </blockquote>
 		  <br><br>
 		{% endfor %}

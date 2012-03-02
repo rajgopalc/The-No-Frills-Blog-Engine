@@ -6,7 +6,7 @@
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
 		<p> Fill in that Blog Post! <p>
-		<form action="/save" method="post">
+		<form action="{{bloburl}}" method="post" enctype="multipart/form-data">
 		  <table>
 		    <tr>
 		      <td>
@@ -23,6 +23,16 @@
  		       <td>
 			 <div><textarea name="content" rows="25" cols="100"></textarea></div>
 		       </td>
+		    </tr>
+		    <tr>
+		      <td>
+			<label>Upload Image : </label>
+		      </td>
+		    </tr>
+		    <tr>
+		      <td>
+			<input type="file" name="file">
+		      </td>
 		    </tr>
 		    </table>
         	    <div><input type="submit" value="Submit"></div>
