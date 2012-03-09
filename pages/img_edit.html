@@ -5,7 +5,7 @@
 	<body background="/img/bg3.jpg">
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
-		<p> Fill in that Blog Post! <p>
+		<p> Please Re-upload the image for this post <p>
 		<form action="{{bloburl}}" method="post" enctype="multipart/form-data">
 		  <table style="table-layout:fixed;">
 		    <tr>
@@ -13,7 +13,7 @@
 			<label>Title : </label>
 		      </td>
 		      <td>
-			<div><input type="text" name="title" size="50"></div>
+			<div><input type="text" name="title" size="50" value="{{mod_title}}" readonly="readonly"></div>
 		      </td>
 		    </tr>
 		    <tr>
@@ -21,19 +21,19 @@
 			<label>Content : </label>
 		      </td>
  		       <td>
-			 <div><textarea name="content" rows="25" cols="100"></textarea></div>
+			 <div><textarea name="content" rows="25" cols="100" readonly="readonly">{{mod_content}}</textarea></div>
 		       </td>
 		    </tr>
 		    <tr>
 		      <td>
-			<label>Upload Image : </label>
+			<label>Re-Upload Image : </label>
 		      </td>
 		      <td>
 			<div><input type="file" name="file" size="50"></div>
 		      </td>
 		    </tr>
 		    <tr>
-		      <td></td>
+		      <td><input type="hidden" name="postid" value="{{postid}}"></td>
 		      <td align="right">
         	    	<div><input type="submit" value="Submit">
 		    	<input type="button" value="Cancel" onClick="window.location.replace('/');"></div>

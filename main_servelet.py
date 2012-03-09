@@ -45,7 +45,10 @@ class IndexPage(webapp.RequestHandler):
   def processRequest(self):
 	blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY date DESC LIMIT 10")
         user=users.get_current_user()
-        username=user.nickname()
+	if user:
+        	username=user.nickname()
+	else:
+		username=''
         admin_status=users.is_current_user_admin()
         login=users.create_login_url('/')
 	logout=users.create_logout_url('/')
@@ -60,6 +63,8 @@ class IndexPage(webapp.RequestHandler):
 			'date_list':self.get_month_count()
                         }
 	path = os.path.join(os.path.dirname(__file__), 'pages/index.html')
+	logging.debug('THE PATH!!')	
+	logging.debug(path)
         self.response.out.write(template.render(path,template_value))
 
   #get_month_count is a function written in Picoblog, reused in this application.
@@ -177,8 +182,8 @@ class EditPost(webapp.RequestHandler):
 			'login': login,
 			}
 
-        user=users.get_current_user()
-	if user:
+        #user=users.get_current_user()
+	if user_status:
 		logging.debug('User login done')
 		if users.is_current_user_admin():
 			logging.debug('User is a admin')
@@ -222,6 +227,60 @@ class DeletePost(webapp.RequestHandler):
                 data.delete()
         self.redirect('/')
 
+class DeleteImgHandler(webapp.RequestHandler):
+    def get(self,postid):
+        blog_data = BlogData.all()
+        start_cursor=memcache.get('blogdata_start_cursor')
+        end_cursor=memcache.get('blogdata_end_cursor')
+        if start_cursor:
+            blog_data.with_cursor(start_cursor=start_cursor)
+        if end_cursor:
+            blog_data.with_cursor(end_cursor=end_cursor)
+        for data in blog_data:
+            if(data.key().id()==int(postid)):
+                if (data.blob_key != "None"):
+                    blob_info=blobstore.BlobInfo.get(data.blob_key)
+                    blob_info.delete()
+                    mod_title=data.title
+                    mod_content=data.content
+        user_status=users.get_current_user()
+        admin_status=users.is_current_user_admin()
+        bloburl=blobstore.create_upload_url('/imgresave')
+        template_value={'postid':postid,
+                        'user_status':user_status,
+                        'admin_status':admin_status,
+                        'mod_title':mod_title,
+                        'mod_content':mod_content,
+                        'bloburl':bloburl
+			}
+        if user_status:
+		logging.debug('User login done')
+		if users.is_current_user_admin():
+			logging.debug('User is a admin')
+			path = os.path.join(os.path.dirname(__file__), 'pages/img_edit.html')
+        		self.response.out.write(template.render(path,template_value))
+		else:
+			self.redirect('/') #needs to be changed to a static non admin error page
+	else:
+		logging.debug('User not found..Login please')
+		self.redirect(users.create_login_url(self.request.uri))
+
+class ResaveImgHandler(blobstore_handlers.BlobstoreUploadHandler):
+  def post(self):
+        upload_files=self.get_uploads('file')
+        if (upload_files):
+            blob_info=upload_files[0]
+            blob_key=blob_info.key()
+            logging.debug('Blob Key')
+            logging.debug(blob_key)
+        else:
+            blob_key="None"
+	postid=int(self.request.get('postid'))
+        bd=BlogData.get_by_id(postid)
+        bd.blob_key=str(blob_key)
+        bd.put()
+        self.redirect('/')
+
 application = webapp.WSGIApplication([
   ('/', IndexPage),
   ('/admin',AdminDash),
@@ -230,7 +289,9 @@ application = webapp.WSGIApplication([
   ('/edit/([\w]*)/?$',EditPost),
   ('/editsave',SaveEditPost),
   ('/showimg/([^/]+)?', ShowImg),
-  ('/deletepost/([\w]*)/?$', DeletePost)
+  ('/deletepost/([\w]*)/?$', DeletePost),
+  ('/deleteimg/([\w]*)/?$', DeleteImgHandler),
+  ('/imgresave', ResaveImgHandler) 
 ], debug=True)
 
 

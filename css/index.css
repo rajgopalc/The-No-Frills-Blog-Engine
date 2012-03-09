@@ -1,0 +1,35 @@
+body{
+     font-family: 'Magra', sans-serif
+    }
+a.index_anchor{
+                text-decoration:none;
+                color:black;
+              }
+a.index_anchor:hover{
+	             text-decoration:none;
+		     text-shadow: 4px 4px 4px #aaa;
+	             color:white;
+                    }
+p.postcontent{
+		font-family: 'Marck Script', cursive;
+		font-size: 18px;
+             }
+big.posttitle{
+                font-family:'PT Sans', sans-serif;
+                text-shadow: 4px 4px 4px #aaa;
+             }
+h1{
+   font-family: 'Alex Brush', cursive;
+   font-size: 36px;
+  }
+h4{
+   font-family:'Almendra SC', serif;
+  }
+small{
+      font-size: 11px;
+     }
+img{
+    border: 6px groove #545565;
+    float: center;
+    padding: 10px 10px 10px 10px;
+    }

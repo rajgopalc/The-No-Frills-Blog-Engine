@@ -1,26 +1,16 @@
 <html>
 	<head>
 		<title> Index Page </title>
-		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700&amp;v2' rel='stylesheet' type='text/css'/>
-		<style>
-		  a.index_anchor{
-		             text-decoration:none;
-		             background-color:black;
-		             color:white;
-		             }
-		  a.index_anchor:hover{
-		             text-decoration:none;
-		             background-color:white;
-		             color:black;
-		             border-left:5px solid black;
-		             border-right:5px solid black;
-		             }
-		</style>
+		<link href='http://fonts.googleapis.com/css?family=Alex+Brush&text=Kaleidoscope' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Marck+Script|Magra|PT+Sans' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Almendra+SC' rel='stylesheet' type='text/css'>
+		<link type='text/css' rel='stylesheet' href='/stylesheets/index.css'>
 	</head>
-	<body>
+	<body background="/img/bg3.jpg">
 	  <div id="header" align="right" height="5px" width="100%" style="valign:top;">
 	    {% if current_user %}
 		    <a class="index_anchor" href={{logout}}> Logout</a>
+			|
                       {% if admin_status %}
 		        <a class="index_anchor" href='/admin'> Admin Dashboard </a>
 		      {% else %}
@@ -31,7 +21,7 @@
 		    {% endif %}
           </div>
 	  <hr>
-	  <div width="100%" height="20px" align="left">
+	  <div width="100%" height="20px" align="center">
 	    <h1> Kaleidoscope </h1>
 	    <h4>-- The World as I see it -- </h4>
 	  </div>
@@ -51,18 +41,23 @@
 	  </div>
 	  <div style="top:2em; position:relative; width:50%;">
 		{% for data in blog_data %}
-		  <blockquote><big style="text-decoration:underline;">{{data.title|escape}}</big>
-		    <p>{{data.content|escape}}</p>
+		  <blockquote>
+		    <p><big class="posttitle" style="text-decoration:underline;">{{data.title|escape}}</big></p>
 		    {% ifnotequal data.blob_key "None" %}
-		    <img src="/showimg/{{data.blob_key}}" heigh="200px" width="200x"/><br>
+		    <img src="/showimg/{{data.blob_key}}" style="width:75%"/><br><br>
 		    {% endifnotequal %}
-		  <small><i>Written by <b>{{data.author}}</b> on {{data.date|date}}</i></small>
+		    <p class="postcontent">{{data.content}}</p>
+		  <small><i>Written by <b>{{data.author}}</b> on {{data.date|date}}</i>
 		  {% if admin_status %}
 		   {% ifequal data.author current_username %}
 		    <a href='/edit/{{data.key.id}}'>Edit</a>
 		    <a href='/deletepost/{{data.key.id}}'>Delete Post</a>
+		    {% ifnotequal data.blob_key "None" %}
+		      <a href='/deleteimg/{{data.key.id}}'>Change Image</a>
+		    {% endifnotequal %}
 		   {% endifequal %}
 		  {% endif %}
+		  </small>
 		  </blockquote>
 		  <br><br>
 		{% endfor %}

@@ -2,10 +2,11 @@
 	<head> 
 		<title> Admin Dashboard </title>
 	</head>
-	<body>
+	<body background="/img/bg3.jpg">
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
-		<p> Fill in that Blog Post! <p>
+		<p> Go Ahead..Edit that Blog Post! <p>
+		<p><small>Note : You can't edit the uploaded image here</small></p>
 		<form action="/editsave" method="post">
 		  <table>
 		    <tr>
@@ -24,10 +25,14 @@
 			 <div><textarea name="content" rows="25" cols="100">{{mod_content}}</textarea></div>
 		       </td>
 		    </tr>
-		    </table>
-		    <input type="hidden" name="postid" value="{{postid}}">
-        	    <div><input type="submit" value="Submit"></div>
-		    <div><input type="button" value="Cancel" onClick="window.location.replace('/');"></div>
+		       <tr>
+		      <td> <input type="hidden" name="postid" value="{{postid}}"></td>
+		      <td align="right">
+        	    	<div><input type="submit" value="Submit">
+		    	<input type="button" value="Cancel" onClick="window.location.replace('/');"></div>
+		      </td>
+		    </tr>
+		  </table>  
           	</form>
 		</div>
 	</body>
