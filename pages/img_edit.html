@@ -1,12 +1,37 @@
 <html>
 	<head> 
 		<title> Admin Dashboard </title>
+		<script>
+		  function validateUploadedFile(filename){
+		      if(/(\.png|\.gif|\.jpg|\.jpeg)$/i.test(filename)){
+		          return true;
+		      }
+		      else{
+		          return false;
+                      }
+		  }
+		  function Validate(){
+		      var upload_element=document.getElementById("uploadedfile");
+		      var upload_val=upload_element.value;
+		      if(upload_val != ""){
+		          if(!validateUploadedFile(upload_val)){
+		              alert('The file being uploaded is not an image file.Use jpeg/png/gif only');
+		          }
+		           else{
+		               document.forms["blogform"].submit()
+		          }
+		      }
+		      else{
+		          document.forms["blogform"].submit()
+		      }
+		  }
+		  </script>
 	</head>
 	<body background="/img/bg3.jpg">
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
 		<p> Please Re-upload the image for this post <p>
-		<form action="{{bloburl}}" method="post" enctype="multipart/form-data">
+		<form id="blogform" action="{{bloburl}}" method="post" enctype="multipart/form-data">
 		  <table style="table-layout:fixed;">
 		    <tr>
 		      <td>
@@ -29,13 +54,13 @@
 			<label>Re-Upload Image : </label>
 		      </td>
 		      <td>
-			<div><input type="file" name="file" size="50"></div>
+			<div><input id="uploadedfile" type="file" name="file" size="50"></div>
 		      </td>
 		    </tr>
 		    <tr>
 		      <td><input type="hidden" name="postid" value="{{postid}}"></td>
 		      <td align="right">
-        	    	<div><input type="submit" value="Submit">
+        	    	<div><input type="button" value="Submit" onClick="Validate()">
 		    	<input type="button" value="Cancel" onClick="window.location.replace('/');"></div>
 		      </td>
 		    </tr>

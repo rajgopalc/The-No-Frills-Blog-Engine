@@ -1,20 +1,47 @@
 <html>
 	<head> 
 		<title> Admin Dashboard </title>
+		<script>
+		  /* Trim Function is obtained from http://www.javascript-coder.com/javascript-form/getelementbyid-form.phtml */
+		  function trim (str)
+		  {
+		      return str.replace (/^\s+|\s+$/g, '');
+		  }
+		  function ChangeFontColor(element){
+		      element.style.color="black";
+		  }
+		  function Validate(){
+		      var title_element=document.getElementById("blogtitle");
+		      var content_element=document.getElementById("blogcontent");
+		      var title_val=title_element.value;
+		      var content_val=content_element.value;
+		      if(trim(title_val)==""){
+		          title_element.value= "***Please enter a suitable title for your blog post!";
+		          title_element.style.color="red";
+		      }
+		      else if(trim(content_val)==""){
+		         content_element.value="***Nothing is written..Please enter some content!";
+		         content_element.style.color="red";
+		      }
+		      else{
+		          document.forms["blogform"].submit()
+		      }
+		  }
+		</script>
 	</head>
 	<body background="/img/bg3.jpg">
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
 		<p> Go Ahead..Edit that Blog Post! <p>
 		<p><small>Note : You can't edit the uploaded image here</small></p>
-		<form action="/editsave" method="post">
+		<form id="blogform" action="/editsave" method="post">
 		  <table>
 		    <tr>
 		      <td>
 			<label>Title : </label>
 		      </td>
 		      <td>
-			<div><input type="text" name="title" value="{{mod_title}}"></div>
+			<div><input id="blogtitle" type="text" name="title" value="{{mod_title}}" size="50" onFocus="ChangeFontColor(this)"></div>
 		      </td>
 		    </tr>
 		    <tr>
@@ -22,13 +49,13 @@
 			<label>Content : </label>
 		      </td>
  		       <td>
-			 <div><textarea name="content" rows="25" cols="100">{{mod_content}}</textarea></div>
+			 <div><textarea id="blogcontent" name="content" rows="25" cols="100" onFocus="ChangeFontColor(this)">{{mod_content}}</textarea></div>
 		       </td>
 		    </tr>
 		       <tr>
 		      <td> <input type="hidden" name="postid" value="{{postid}}"></td>
 		      <td align="right">
-        	    	<div><input type="submit" value="Submit">
+        	    	<div><input type="button" value="Submit" onClick="Validate()">
 		    	<input type="button" value="Cancel" onClick="window.location.replace('/');"></div>
 		      </td>
 		    </tr>

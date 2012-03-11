@@ -4,20 +4,22 @@
 		<link href='http://fonts.googleapis.com/css?family=Alex+Brush&text=Kaleidoscope' rel='stylesheet' type='text/css'>
 		<link href='http://fonts.googleapis.com/css?family=Marck+Script|Magra|PT+Sans' rel='stylesheet' type='text/css'>
 		<link href='http://fonts.googleapis.com/css?family=Almendra+SC' rel='stylesheet' type='text/css'>
+		<link type='text/css' rel='stylesheet' href='/stylesheets/base.css'>
 		<link type='text/css' rel='stylesheet' href='/stylesheets/index.css'>
 	</head>
 	<body background="/img/bg3.jpg">
-	  <div id="header" align="right" height="5px" width="100%" style="valign:top;">
+	  <div id="header" align="right" height="3px" width="100%" style="valign:top;">
 	    {% if current_user %}
-		    <a class="index_anchor" href={{logout}}> Logout</a>
+	            <quote style="float:left;"> Welcome {{current_user}} </quote>
+		    <a class="base_anchor" href={{logout}}> Logout</a>
 			|
                       {% if admin_status %}
-		        <a class="index_anchor" href='/admin'> Admin Dashboard </a>
+		        <a class="base_anchor" href='/admin'> Admin Dashboard </a>
 		      {% else %}
 			&nbsp; Info : User not Admin 
 		      {% endif %}
 		    {% else %}  
-		      <a class="index_anchor" href={{login}}> Login </a>
+		      <a class="base_anchor" href={{login}}> Login </a>
 		    {% endif %}
           </div>
 	  <hr>

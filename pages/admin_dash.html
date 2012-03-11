@@ -1,19 +1,73 @@
 <html>
 	<head> 
 		<title> Admin Dashboard </title>
+		<link href='http://fonts.googleapis.com/css?family=Magra' rel='stylesheet' type='text/css'>
+		<link type='text/css' rel='stylesheet' href='/stylesheets/base.css'>
+		<script>
+		  /* Trim Function is obtained from http://www.javascript-coder.com/javascript-form/getelementbyid-form.phtml */
+		  function trim (str)
+		  {
+		      return str.replace (/^\s+|\s+$/g, '');
+		  }
+		  function ChangeFontColor(element){
+		      element.style.color="black";
+		  }
+		  function validateUploadedFile(filename){
+		      if(/(\.png|\.gif|\.jpg|\.jpeg)$/i.test(filename)){
+		          return true;
+		      }
+		      else{
+		          return false;
+                      }
+		  }
+		  function Validate(){
+		      var title_element=document.getElementById("blogtitle");
+		      var content_element=document.getElementById("blogcontent");
+		      var title_val=title_element.value;
+		      var content_val=content_element.value;
+		      var upload_element=document.getElementById("uploadedfile");
+		      var upload_val=upload_element.value;
+		      if(trim(title_val)==""){
+		          title_element.value= "***Please enter a suitable title for your blog post!";
+		          title_element.style.color="red";
+		      }
+		      else if(trim(content_val)==""){
+		         content_element.value="***Nothing is written..Please enter some content!";
+		         content_element.style.color="red";
+		      }
+		      else if(upload_val != ""){
+		          if(!validateUploadedFile(upload_val)){
+		              alert('The file being uploaded is not an image file.Use jpeg/png/gif only');
+		          }
+		          else{
+		            document.forms["blogform"].submit();
+		          }
+		      }
+		      else{
+		          document.forms["blogform"].submit();
+		      }
+		  }
+		</script>
 	</head>
 	<body background="/img/bg3.jpg">
+	       <div align="right">
+		 <a class="base_anchor" href="{{logout}}">Logout</a>
+		  |
+		 <a class="base_anchor" href="/">Home Page</a>
+	       </div>
+		<hr>
 	       <div align="center">
 		<h3> Welcome to Admin's Dashboard </h3>
 		<p> Fill in that Blog Post! <p>
-		<form action="{{bloburl}}" method="post" enctype="multipart/form-data">
+		<hr>
+		<form id="blogform" action="{{bloburl}}" method="post" enctype="multipart/form-data">
 		  <table style="table-layout:fixed;">
 		    <tr>
 		      <td>
 			<label>Title : </label>
 		      </td>
 		      <td>
-			<div><input type="text" name="title" size="50"></div>
+			<div><input id="blogtitle" type="text" name="title" size="50" onFocus="ChangeFontColor(this)"></div>
 		      </td>
 		    </tr>
 		    <tr>
@@ -21,7 +75,7 @@
 			<label>Content : </label>
 		      </td>
  		       <td>
-			 <div><textarea name="content" rows="25" cols="100"></textarea></div>
+			 <div><textarea id="blogcontent" name="content" rows="25" cols="100" onFocus="ChangeFontColor(this)"></textarea></div>
 		       </td>
 		    </tr>
 		    <tr>
@@ -29,13 +83,13 @@
 			<label>Upload Image : </label>
 		      </td>
 		      <td>
-			<div><input type="file" name="file" size="50"></div>
+			<div><input type="file" id="uploadedfile" name="file" size="50" accept="image/gif, image/jpeg"></div>
 		      </td>
 		    </tr>
 		    <tr>
 		      <td></td>
 		      <td align="right">
-        	    	<div><input type="submit" value="Submit">
+        	    	<div><input type="button" value="Submit" onClick="Validate()">
 		    	<input type="button" value="Cancel" onClick="window.location.replace('/');"></div>
 		      </td>
 		    </tr>

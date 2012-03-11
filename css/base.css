@@ -1,0 +1,12 @@
+body{
+     font-family: 'Magra', sans-serif;
+    }
+a.base_anchor{
+                text-decoration:none;
+                color:black;
+              }
+a.base_anchor:hover{
+	             text-decoration:none;
+		     text-shadow: 4px 4px 4px #aaa;
+	             color:white;
+                    }

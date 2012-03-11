@@ -1,3 +1,15 @@
+body{
+     font-family: 'Magra', sans-serif
+    }
+a.index_anchor{
+                text-decoration:none;
+                color:black;
+              }
+a.index_anchor:hover{
+	             text-decoration:none;
+		     text-shadow: 4px 4px 4px #aaa;
+	             color:white;
+                    }
 p.postcontent{
 		font-family: 'Marck Script', cursive;
 		font-size: 18px;
