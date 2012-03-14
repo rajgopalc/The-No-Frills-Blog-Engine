@@ -281,6 +281,7 @@ class ResaveImgHandler(blobstore_handlers.BlobstoreUploadHandler):
         bd.put()
         self.redirect('/')
 
+
 application = webapp.WSGIApplication([
   ('/', IndexPage),
   ('/admin',AdminDash),
@@ -291,7 +292,7 @@ application = webapp.WSGIApplication([
   ('/showimg/([^/]+)?', ShowImg),
   ('/deletepost/([\w]*)/?$', DeletePost),
   ('/deleteimg/([\w]*)/?$', DeleteImgHandler),
-  ('/imgresave', ResaveImgHandler) 
+  ('/imgresave', ResaveImgHandler)
 ], debug=True)
 
 
