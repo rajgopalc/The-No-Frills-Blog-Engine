@@ -10,5 +10,13 @@ handlers:
 - url: /img
   static_dir: img
 
+- url: /favicon.ico
+  static_files: img/favicon.ico
+  upload: img/favicon.ico
+
+- url: /error
+  static_files: static_page/error.html
+  upload: static/error.html
+
 - url: /.*
   script: main_servelet.py

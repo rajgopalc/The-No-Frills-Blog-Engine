@@ -49,7 +49,7 @@
 		  <blockquote>
 		    <p><big class="posttitle" style="text-decoration:underline;">{{data.title|escape}}</big></p>
 		    {% ifnotequal data.blob_key "None" %}
-		    <img src="/showimg/{{data.blob_key}}" style="width:75%"/><br><br>
+		      <img src="/showimg/{{data.blob_key}}" style="width:75%"/><br><br>
 		    {% endifnotequal %}
 		    <p class="postcontent">{{data.content}}</p>
 		  <small><i>Written by <b>{{data.author}}</b> on {{data.date|date}}</i>

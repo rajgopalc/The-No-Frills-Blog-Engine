@@ -5,6 +5,7 @@ import wsgiref.handlers
 import logging
 import os
 import urllib
+import sys, traceback
 
 
 from google.appengine.ext import db
@@ -43,29 +44,35 @@ class IndexPage(webapp.RequestHandler):
   def get(self):
 	self.processRequest()
   def processRequest(self):
-	blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY date DESC LIMIT 10")
-        user=users.get_current_user()
-	if user:
-        	username=user.nickname()
-	else:
-		username=''
-        admin_status=users.is_current_user_admin()
-        login=users.create_login_url('/')
-	logout=users.create_logout_url('/')
-        for data in blog_data:
-            logging.debug(data.blob_key)
-	template_value={'blog_data':blog_data,
-                        'current_user':user,
-                        'current_username':username,
-                        'admin_status':admin_status,
-			'logout' : logout,
-			'login': login,
-			'date_list':self.get_month_count()
-                        }
-	path = os.path.join(os.path.dirname(__file__), 'pages/index.html')
-	logging.debug('THE PATH!!')	
-	logging.debug(path)
-        self.response.out.write(template.render(path,template_value))
+      try:
+          blog_data=db.GqlQuery("SELECT * FROM BlogData ORDER BY date DESC LIMIT 10")
+          user=users.get_current_user()
+          if user:
+              username=user.nickname()
+          else:
+              username=''
+          admin_status=users.is_current_user_admin()
+          login=users.create_login_url('/')
+          logout=users.create_logout_url('/')
+          for data in blog_data:
+              logging.debug(data.blob_key)
+          template_value={'blog_data':blog_data,
+                          'current_user':user,
+                          'current_username':username,
+                          'admin_status':admin_status,
+                          'logout' : logout,
+                          'login': login,
+                          'date_list':self.get_month_count()
+                          }
+          path = os.path.join(os.path.dirname(__file__), 'pages/index.html')
+          logging.debug('THE PATH!!')	
+          logging.debug(path)
+          self.response.out.write(template.render(path,template_value))
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
   #get_month_count is a function written in Picoblog, reused in this application.
   #It is written by B.Clapper
@@ -91,6 +98,7 @@ class AdminDash(webapp.RequestHandler):
   def get(self):
 	self.processRequest()
   def processRequest(self):
+      try:
 	bloburl=blobstore.create_upload_url('/save')
 	logout = users.create_logout_url('/')
 	template_value={'logout':logout,
@@ -104,15 +112,20 @@ class AdminDash(webapp.RequestHandler):
 			path = os.path.join(os.path.dirname(__file__), 'pages/admin_dash.html')
         		self.response.out.write(template.render(path,template_value))
 		else:
-			self.redirect('/') #needs to be changed to a static non admin error page
+			self.redirect('/error')
 	else:
 		logging.debug('User not found..Login please')
 		self.redirect(users.create_login_url(self.request.uri))
-
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
 
 class SavePost(blobstore_handlers.BlobstoreUploadHandler):
   def post(self):
+      try:
         upload_files=self.get_uploads('file')
         if (upload_files):
             blob_info=upload_files[0]
@@ -131,10 +144,16 @@ class SavePost(blobstore_handlers.BlobstoreUploadHandler):
         blogdata.blob_key=str(blob_key)
         blogdata.put()
 	self.redirect('/')
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
 
 class MonthArchive(webapp.RequestHandler):
   def get(self,year,month):
+      try:
 	blog_data=BlogData.all_for_month(int(year),int(month))
         user_status=users.get_current_user()
         admin_status=users.is_current_user_admin()
@@ -153,9 +172,15 @@ class MonthArchive(webapp.RequestHandler):
                         }
 	path = os.path.join(os.path.dirname(__file__), 'pages/index.html')
         self.response.out.write(template.render(path,template_value))
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
 class EditPost(webapp.RequestHandler):
   def get(self,postid):
+      try:
         logging.debug('In EditPost')
         logging.debug(int(postid))
 	blog_data = BlogData.all()
@@ -194,79 +219,111 @@ class EditPost(webapp.RequestHandler):
 	else:
 		logging.debug('User not found..Login please')
 		self.redirect(users.create_login_url(self.request.uri))
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
 class SaveEditPost(webapp.RequestHandler):
     def post(self):
-        postid=int(self.request.get('postid'))
-        bd=BlogData.get_by_id(postid)
-        bd.title=self.request.get('title')
-        bd.content=self.request.get('content')
-        bd.put()
-        self.redirect('/')
+        try:
+            postid=int(self.request.get('postid'))
+            bd=BlogData.get_by_id(postid)
+            bd.title=self.request.get('title')
+            bd.content=self.request.get('content')
+            bd.put()
+            self.redirect('/')
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.debug('Error Occurred')
+            logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+            self.redirect('/error')
 
 class ShowImg(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self,resource):
-        resource=str(urllib.unquote(resource))
-        blob_info=blobstore.BlobInfo.get(resource)
-        self.send_blob(blob_info)
+        try:
+            resource=str(urllib.unquote(resource))
+            blob_info=blobstore.BlobInfo.get(resource)
+            self.send_blob(blob_info)
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.debug('Error Occurred')
+            logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+            self.redirect('/error')
 
 class DeletePost(webapp.RequestHandler):
     def get(self,postid):
-        blog_data = BlogData.all()
-        start_cursor=memcache.get('blogdata_start_cursor')
-        end_cursor=memcache.get('blogdata_end_cursor')
-        if start_cursor:
-            blog_data.with_cursor(start_cursor=start_cursor)
-        if end_cursor:
-            blog_data.with_cursor(end_cursor=end_cursor)
-        for data in blog_data:
-            if(data.key().id()==int(postid)):
-                if (data.blob_key != "None"):
-                    blob_info=blobstore.BlobInfo.get(data.blob_key)
-                    blob_info.delete()
-                data.delete()
-        self.redirect('/')
+        try:
+            blog_data = BlogData.all()
+            start_cursor=memcache.get('blogdata_start_cursor')
+            end_cursor=memcache.get('blogdata_end_cursor')
+            if start_cursor:
+                blog_data.with_cursor(start_cursor=start_cursor)
+            if end_cursor:
+                blog_data.with_cursor(end_cursor=end_cursor)
+            for data in blog_data:
+                if(data.key().id()==int(postid)):
+                    if (data.blob_key != "None"):
+                        blob_info=blobstore.BlobInfo.get(data.blob_key)
+                        blob_info.delete()
+                        data.delete()
+            self.redirect('/')
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.debug('Error Occurred')
+            logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+            self.redirect('/error')
 
 class DeleteImgHandler(webapp.RequestHandler):
     def get(self,postid):
-        blog_data = BlogData.all()
-        start_cursor=memcache.get('blogdata_start_cursor')
-        end_cursor=memcache.get('blogdata_end_cursor')
-        if start_cursor:
-            blog_data.with_cursor(start_cursor=start_cursor)
-        if end_cursor:
-            blog_data.with_cursor(end_cursor=end_cursor)
-        for data in blog_data:
-            if(data.key().id()==int(postid)):
-                if (data.blob_key != "None"):
-                    blob_info=blobstore.BlobInfo.get(data.blob_key)
-                    blob_info.delete()
-                    mod_title=data.title
-                    mod_content=data.content
-        user_status=users.get_current_user()
-        admin_status=users.is_current_user_admin()
-        bloburl=blobstore.create_upload_url('/imgresave')
-        template_value={'postid':postid,
-                        'user_status':user_status,
-                        'admin_status':admin_status,
-                        'mod_title':mod_title,
-                        'mod_content':mod_content,
-                        'bloburl':bloburl
-			}
-        if user_status:
+        try:
+            blog_data = BlogData.all()
+            start_cursor=memcache.get('blogdata_start_cursor')
+            end_cursor=memcache.get('blogdata_end_cursor')
+            if start_cursor:
+                blog_data.with_cursor(start_cursor=start_cursor)
+            if end_cursor:
+                blog_data.with_cursor(end_cursor=end_cursor)
+            for data in blog_data:
+                if(data.key().id()==int(postid)):
+                    if (data.blob_key != "None"):
+                        blob_info=blobstore.BlobInfo.get(data.blob_key)
+                        blob_info.delete()
+                        data.blob_key="None"
+                        data.put()
+                        logging.debug("Blob key : "+data.blob_key)
+                        mod_title=data.title
+                        mod_content=data.content
+            user_status=users.get_current_user()
+            admin_status=users.is_current_user_admin()
+            bloburl=blobstore.create_upload_url('/imgresave')
+            template_value={'postid':postid,
+                            'user_status':user_status,
+                            'admin_status':admin_status,
+                            'mod_title':mod_title,
+                            'mod_content':mod_content,
+                            'bloburl':bloburl
+                            }
+            if user_status:
 		logging.debug('User login done')
 		if users.is_current_user_admin():
-			logging.debug('User is a admin')
-			path = os.path.join(os.path.dirname(__file__), 'pages/img_edit.html')
-        		self.response.out.write(template.render(path,template_value))
+                    logging.debug('User is a admin')
+                    path = os.path.join(os.path.dirname(__file__), 'pages/img_edit.html')
+                    self.response.out.write(template.render(path,template_value))
 		else:
-			self.redirect('/') #needs to be changed to a static non admin error page
-	else:
+                    self.redirect('/') #needs to be changed to a static non admin error page
+            else:
 		logging.debug('User not found..Login please')
 		self.redirect(users.create_login_url(self.request.uri))
-
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.debug('Error Occurred')
+            logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+            self.redirect('/error')
 class ResaveImgHandler(blobstore_handlers.BlobstoreUploadHandler):
   def post(self):
+      try:
         upload_files=self.get_uploads('file')
         if (upload_files):
             blob_info=upload_files[0]
@@ -280,6 +337,11 @@ class ResaveImgHandler(blobstore_handlers.BlobstoreUploadHandler):
         bd.blob_key=str(blob_key)
         bd.put()
         self.redirect('/')
+      except:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.debug('Error Occurred')
+          logging.debug((traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)))
+          self.redirect('/error')
 
 
 application = webapp.WSGIApplication([
