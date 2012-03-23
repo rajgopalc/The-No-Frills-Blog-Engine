@@ -268,6 +268,8 @@ class DeletePost(webapp.RequestHandler):
                         blob_info=blobstore.BlobInfo.get(data.blob_key)
                         blob_info.delete()
                         data.delete()
+                    else:
+                        data.delete()
             self.redirect('/')
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
